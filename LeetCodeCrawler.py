@@ -1,5 +1,6 @@
 # -*- coding:UTF-8 -*-
 import os
+import time
 from pathlib import Path
 import requests
 import json
@@ -35,7 +36,7 @@ class downloader(object):
     # 54 页 每页50
     def get_download_url(self):
         count = 0
-        for skip in range(1):
+        for skip in range(54):
             cookie = "gr_user_id=13bf8bb7-48e4-4145-8917-f6dc1e8f426b; _bl_uid=Ojlmv3hUd9Invaaq1qC7mbFeCqtC; a2873925c34ecbd2_gr_last_sent_cs1=yltrcc; _ga=GA1.2.302401184.1653632797; Hm_lvt_fa218a3ff7179639febdb15e372f411c=1656772954,1657351226; csrftoken=ZAbkkXaXbPWlZAyN6eZlQDhfi1kSODbTtnL2wF6yc3f1SUJnv8XPGBYgt8R5Setr; aliyungf_tc=0d8091b88414963b9bfc64c795b1d9323b3407fbdde74472c1b426757c47c3bd; NEW_PROBLEMLIST_PAGE=1; a2873925c34ecbd2_gr_session_id=19c12105-056d-4008-a9c1-5df9471e985e; a2873925c34ecbd2_gr_last_sent_sid_with_cs1=19c12105-056d-4008-a9c1-5df9471e985e; a2873925c34ecbd2_gr_session_id_19c12105-056d-4008-a9c1-5df9471e985e=true; a2873925c34ecbd2_gr_cs1=yltrcc; LEETCODE_SESSION=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfYXV0aF91c2VyX2lkIjoiMTYyNDQyNSIsIl9hdXRoX3VzZXJfYmFja2VuZCI6ImF1dGhlbnRpY2F0aW9uLmF1dGhfYmFja2VuZHMuUGhvbmVBdXRoZW50aWNhdGlvbkJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiI3ZjJiM2U4N2QwZWU0NTQ1ZWZkZmY3MTg3MzQ0NTQwZTAzYzRlMzY4MjViNWEzNzIzZTc4NDAxNzYyZDM5NTI2IiwiaWQiOjE2MjQ0MjUsImVtYWlsIjoiIiwidXNlcm5hbWUiOiJ5bHRyY2MiLCJ1c2VyX3NsdWciOiJ5bHRyY2MiLCJhdmF0YXIiOiJodHRwczovL2Fzc2V0cy5sZWV0Y29kZS5jbi9hbGl5dW4tbGMtdXBsb2FkL3VzZXJzL2Rhcmtsb3Z5LTkvYXZhdGFyXzE2MzUzNjk5OTEucG5nIiwicGhvbmVfdmVyaWZpZWQiOnRydWUsIl90aW1lc3RhbXAiOjE2NTczNTI4MzIuOTQwMjA0NiwiZXhwaXJlZF90aW1lXyI6MTY1OTg5ODgwMCwidmVyc2lvbl9rZXlfIjoxLCJsYXRlc3RfdGltZXN0YW1wXyI6MTY1NzQzNzkwOH0.ZEd-TVQzL-zwN5L109fPx5cWEHCe6G6WxehcaN5aIbQ"
             header = {
                 "cookie": cookie,
@@ -52,6 +53,7 @@ class downloader(object):
                 self.title.append(question['frontendQuestionId'] + "." + question['titleCn'])
                 self.titleSlug.append(question['titleSlug'])
                 count += 1
+            time.sleep(5)
         self.nums = count
 
 
