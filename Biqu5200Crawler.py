@@ -14,8 +14,8 @@ Modify:
 """
 class downloader(object):
     def __init__(self):
-        self.server = 'http://www.biqu5200.net/75_75313/'
-        self.target = 'http://www.biqu5200.net/75_75313/'
+        self.server = 'http://www.biqu5200.net/'
+        self.target = 'http://www.biqu5200.net/0_29/'
         self.names = []            #存放章节名
         self.urls = []            #存放章节链接
         self.nums = 0            #章节数
@@ -111,14 +111,14 @@ def print_time(threadName, threadID):
     if exitFlag == 1:
         end = threadID * quotient + remainder
         for i in range(start, end):
-            dl.writer(dl.names[i], '都市妖奇谈第' + str(threadID + 1) + '部分.txt',
+            dl.writer(dl.names[i], '百炼成仙第' + str(threadID + 1) + '部分.txt',
                       dl.get_contents(dl.urls[i]))
             print('\r', '线程' + threadName + '已下载：  %.3f%%' % float((i-start) / (end - start) * 100), end='', flush=True)
     else:
         for i in range(start, end):
             if i >= dl.nums:
                 break
-            dl.writer(dl.names[i], '都市妖奇谈第' + str(threadID + 1) + '部分.txt',
+            dl.writer(dl.names[i], '百炼成仙第' + str(threadID + 1) + '部分.txt',
                       dl.get_contents(dl.urls[i]))
             print('\t', '线程' + threadName + '已下载：  %.3f%%' % float((i-start) / (end - start) * 100), end='', flush=True)
 
@@ -126,7 +126,7 @@ def print_time(threadName, threadID):
 if __name__ == "__main__":
     dl = downloader()
     dl.get_download_url()
-    print('《都市妖奇谈》开始下载：')
+    print('《百炼成仙》开始下载：')
     quotient = 30
     remainder = dl.nums % 30
     threads = []  # 存放线程的数组，相当于线程池

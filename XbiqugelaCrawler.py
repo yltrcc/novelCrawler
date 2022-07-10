@@ -15,7 +15,7 @@ Modify:
 class downloader(object):
     def __init__(self):
         self.server = 'https://www.xbiquge.la/'
-        self.target = 'https://www.xbiquge.la/21/21542/'
+        self.target = 'https://www.xbiquge.la/0/659/'
         self.names = []            #存放章节名
         self.urls = []            #存放章节链接
         self.nums = 0            #章节数
@@ -123,14 +123,14 @@ def print_time(threadName, threadID):
     if exitFlag == 1:
         end = threadID * quotient + remainder
         for i in range(start, end):
-            dl.writer(dl.names[i], '圣境之王第' + str(threadID + 1) + '部分.txt',
+            dl.writer(dl.names[i], '百炼成仙第' + str(threadID + 1) + '部分.txt',
                       dl.get_contents(dl.urls[i]))
             print('\r', '线程' + threadName + '已下载：  %.3f%%' % float((i-start) / (end - start) * 100), end='', flush=True)
     else:
         for i in range(start, end):
             if i >= dl.nums:
                 break
-            dl.writer(dl.names[i], '圣境之王第' + str(threadID + 1) + '部分.txt',
+            dl.writer(dl.names[i], '百炼成仙第' + str(threadID + 1) + '部分.txt',
                       dl.get_contents(dl.urls[i]))
             print('\t', '线程' + threadName + '已下载：  %.3f%%' % float((i-start) / (end - start) * 100), end='', flush=True)
 
@@ -138,7 +138,7 @@ def print_time(threadName, threadID):
 if __name__ == "__main__":
     dl = downloader()
     dl.get_download_url()
-    print('《圣境之王》开始下载：')
+    print('《百炼成仙》开始下载：')
     quotient = 30
     remainder = dl.nums % 30
     threads = []  # 存放线程的数组，相当于线程池
