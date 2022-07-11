@@ -44,7 +44,7 @@ class downloader(object):
                 "x-csrftoken": "ZAbkkXaXbPWlZAyN6eZlQDhfi1kSODbTtnL2wF6yc3f1SUJnv8XPGBYgt8R5Setr"
             }
             # 发送字典
-            postBody = "{\"query\":\"\\n    query problemsetQuestionList($categorySlug: String, $limit: Int, $skip: Int, $filters: QuestionListFilterInput) {\\n  problemsetQuestionList(\\n    categorySlug: $categorySlug\\n    limit: $limit\\n    skip: $skip\\n    filters: $filters\\n  ) {\\n    hasMore\\n    total\\n    questions {\\n         difficulty\\n   frontendQuestionId\\n          title\\n      titleCn\\n      titleSlug\\n      topicTags {\\n        name\\n        nameTranslated\\n        id\\n        slug\\n      }\\n      extra {\\n        hasVideoSolution\\n        topCompanyTags {\\n          imgUrl\\n          slug\\n          numSubscribed\\n        }\\n      }\\n    }\\n  }\\n}\\n    \",\"variables\":{\"categorySlug\":\"\",\"skip\": " + str(skip) + ",\"limit\":50,\"filters\":{}}}"
+            postBody = "{\"query\":\"\\n    query problemsetQuestionList($categorySlug: String, $limit: Int, $skip: Int, $filters: QuestionListFilterInput) {\\n  problemsetQuestionList(\\n    categorySlug: $categorySlug\\n    limit: $limit\\n    skip: $skip\\n    filters: $filters\\n  ) {\\n    hasMore\\n    total\\n    questions {\\n         difficulty\\n   frontendQuestionId\\n          title\\n      titleCn\\n      titleSlug\\n      topicTags {\\n        name\\n        nameTranslated\\n        id\\n        slug\\n      }\\n      extra {\\n        hasVideoSolution\\n        topCompanyTags {\\n          imgUrl\\n          slug\\n          numSubscribed\\n        }\\n      }\\n    }\\n  }\\n}\\n    \",\"variables\":{\"categorySlug\":\"\",\"skip\": " + str(skip * 50) + ",\"limit\":50,\"filters\":{}}}"
 
             r1 = requests.post("https://leetcode.cn/graphql/", data=postBody, headers=header)
             # print("r1返回的内容为-->" + r1.content.decode())
@@ -53,7 +53,7 @@ class downloader(object):
                 self.title.append(question['frontendQuestionId'] + "." + question['titleCn'])
                 self.titleSlug.append(question['titleSlug'])
                 count += 1
-            time.sleep(5)
+            #time.sleep(5)
         self.nums = count
 
 
@@ -127,14 +127,17 @@ class downloader(object):
         categoryName = ""
         for category in topicTags:
             if categoryName == "":
-                categoryName += "`" + category['translatedName'] + "`"
+                if category['translatedName'] is not None:
+                    categoryName += "`" + category['translatedName'] + "`"
             else:
-                categoryName += ", `" + category['translatedName'] + "`"
+                if category['translatedName'] is not None:
+                    categoryName += ", `" + category['translatedName'] + "`"
         text = text + "## 题解\n**分类标签：**" + categoryName + "\n"
         text = text + "### 题解一：\n"
         ## 分类下载
         for category in topicTags:
-            dl.writer(title, category['translatedName'] + "/" + title + '.md', text, category['translatedName'])
+            if category['translatedName'] is not None:
+                dl.writer(title, category['translatedName'] + "/" + title + '.md', text, category['translatedName'])
         return text
 
 
