@@ -2,7 +2,7 @@
 from bs4 import BeautifulSoup
 import requests,re
 import threading
-import time
+import os
 """
 类说明:下载
 Parameters:
@@ -14,8 +14,10 @@ Modify:
 """
 class downloader(object):
     def __init__(self):
-        self.server = 'https://www.xbiquge.so/book/10444/'
-        self.target = 'https://www.xbiquge.so/book/10444/'
+        self.server = 'https://www.xbiquge.so/book/52704/'
+        self.target = 'https://www.xbiquge.so/book/52704/'
+        self.baseDir = 'D:\\smallTools\\17版2\\录制资料库\\'
+        self.novelName = '大奉打更人'
         self.names = []            #存放章节名
         self.urls = []            #存放章节链接
         self.nums = 0            #章节数
@@ -73,9 +75,8 @@ class downloader(object):
         2019-02-28
     """
     def writer(self, name, path, text):
-        write_flag = True
         with open(path, 'a', encoding='utf-8') as f:
-            f.write(name + '\n')
+            f.write("## " + name + '\n')
             f.writelines(text)
             f.write('\n\n')
 
@@ -111,14 +112,14 @@ def print_time(threadName, threadID):
     if exitFlag == 1:
         end = threadID * quotient + remainder
         for i in range(start, end):
-            dl.writer(dl.names[i], '英雄志第' + str(threadID + 1) + '部分.txt',
+            dl.writer(dl.names[i], dl.baseDir + dl.novelName + '\\' + dl.novelName + '第' + str(threadID + 1) + '部分.md',
                       dl.get_contents(dl.urls[i]))
             print('\r', '线程' + threadName + '已下载：  %.3f%%' % float((i-start) / (end - start) * 100), end='', flush=True)
     else:
         for i in range(start, end):
             if i >= dl.nums:
                 break
-            dl.writer(dl.names[i], '英雄志第' + str(threadID + 1) + '部分.txt',
+            dl.writer(dl.names[i], dl.baseDir + dl.novelName + '\\' + dl.novelName + '第' + str(threadID + 1) + '部分.md',
                       dl.get_contents(dl.urls[i]))
             print('\t', '线程' + threadName + '已下载：  %.3f%%' % float((i-start) / (end - start) * 100), end='', flush=True)
 
@@ -126,7 +127,10 @@ def print_time(threadName, threadID):
 if __name__ == "__main__":
     dl = downloader()
     dl.get_download_url()
-    print('《英雄志》开始下载：')
+    print(dl.novelName + ' 开始下载：')
+    # 判断目录是否存在
+    if not os.path.exists(dl.baseDir + dl.novelName):
+        os.makedirs(dl.baseDir+ dl.novelName)
     quotient = 30
     remainder = dl.nums % 30
     threads = []  # 存放线程的数组，相当于线程池
