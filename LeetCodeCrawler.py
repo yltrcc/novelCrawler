@@ -33,6 +33,7 @@ class downloader(object):
     Modify:
         2019-02-28
     """
+
     # 54 页 每页50
     def get_download_url(self):
         count = 0
@@ -44,7 +45,8 @@ class downloader(object):
                 "x-csrftoken": "ZAbkkXaXbPWlZAyN6eZlQDhfi1kSODbTtnL2wF6yc3f1SUJnv8XPGBYgt8R5Setr"
             }
             # 发送字典
-            postBody = "{\"query\":\"\\n    query problemsetQuestionList($categorySlug: String, $limit: Int, $skip: Int, $filters: QuestionListFilterInput) {\\n  problemsetQuestionList(\\n    categorySlug: $categorySlug\\n    limit: $limit\\n    skip: $skip\\n    filters: $filters\\n  ) {\\n    hasMore\\n    total\\n    questions {\\n         difficulty\\n   frontendQuestionId\\n          title\\n      titleCn\\n      titleSlug\\n      topicTags {\\n        name\\n        nameTranslated\\n        id\\n        slug\\n      }\\n      extra {\\n        hasVideoSolution\\n        topCompanyTags {\\n          imgUrl\\n          slug\\n          numSubscribed\\n        }\\n      }\\n    }\\n  }\\n}\\n    \",\"variables\":{\"categorySlug\":\"\",\"skip\": " + str(skip * 50) + ",\"limit\":50,\"filters\":{}}}"
+            postBody = "{\"query\":\"\\n    query problemsetQuestionList($categorySlug: String, $limit: Int, $skip: Int, $filters: QuestionListFilterInput) {\\n  problemsetQuestionList(\\n    categorySlug: $categorySlug\\n    limit: $limit\\n    skip: $skip\\n    filters: $filters\\n  ) {\\n    hasMore\\n    total\\n    questions {\\n         difficulty\\n   frontendQuestionId\\n          title\\n      titleCn\\n      titleSlug\\n      topicTags {\\n        name\\n        nameTranslated\\n        id\\n        slug\\n      }\\n      extra {\\n        hasVideoSolution\\n        topCompanyTags {\\n          imgUrl\\n          slug\\n          numSubscribed\\n        }\\n      }\\n    }\\n  }\\n}\\n    \",\"variables\":{\"categorySlug\":\"\",\"skip\": " + str(
+                skip * 50) + ",\"limit\":50,\"filters\":{}}}"
 
             r1 = requests.post("https://leetcode.cn/graphql/", data=postBody, headers=header)
             # print("r1返回的内容为-->" + r1.content.decode())
@@ -53,10 +55,8 @@ class downloader(object):
                 self.title.append(question['frontendQuestionId'] + "." + question['titleCn'])
                 self.titleSlug.append(question['titleSlug'])
                 count += 1
-            #time.sleep(5)
+            # time.sleep(5)
         self.nums = count
-
-
 
     """
     函数说明:获取章节内容
@@ -76,16 +76,18 @@ class downloader(object):
             "x-csrftoken": "ZAbkkXaXbPWlZAyN6eZlQDhfi1kSODbTtnL2wF6yc3f1SUJnv8XPGBYgt8R5Setr"
         }
         # 发送字典
-        postBody = "{\"operationName\":\"questionData\",\"variables\":{\"titleSlug\":\""+ target + "\"},\"query\":\"query questionData($titleSlug: String!) {\\n  question(titleSlug: $titleSlug) {translatedTitle\\n   translatedContent\\n  difficulty\\n         topicTags {\\n      name\\n      slug\\n      translatedName\\n      __typename\\n    }\\n  }\\n}\\n\"}"
+        postBody = "{\"operationName\":\"questionData\",\"variables\":{\"titleSlug\":\"" + target + "\"},\"query\":\"query questionData($titleSlug: String!) {\\n  question(titleSlug: $titleSlug) {translatedTitle\\n   translatedContent\\n  difficulty\\n         topicTags {\\n      name\\n      slug\\n      translatedName\\n      __typename\\n    }\\n  }\\n}\\n\"}"
 
         r1 = requests.post("https://leetcode.cn/graphql/", data=postBody, headers=header)
         # print("r1返回的内容为-->" + r1.content.decode())
         text = json.loads(r1.text)
         # 增加分类
-        topicTags = text['data']['question']['topicTags']
-        text = str(text['data']['question']['translatedContent'])
-
-        # 替换 <p> </p>
+        if text['data']['question'] is not None:
+            topicTags = text['data']['question']['topicTags']
+            text = str(text['data']['question']['translatedContent'])
+        else:
+            return
+            # 替换 <p> </p>
         text = text.replace("<p>", "")
         text = text.replace("</p>", "")
         # 替换 <code> </code>
@@ -121,9 +123,9 @@ class downloader(object):
         text = text.replace("<u>", "")
         text = text.replace("</u>", "")
         # print(text)
-        text = "## " + title + "\n## 题目链接\n[" + self.server + target + "](" + self.server + target +")\n## 题目描述\n" + text
-        text = text.replace("示例 1", "## 示例\n示例 1")
-        text = text.replace("提示", "## 提示")
+        text = "**题目链接**\n[" + self.server + target + "](" + self.server + target + ")\n**题目描述**\n" + text
+        text = text.replace("示例 1", "**示例**\n示例 1")
+        text = text.replace("提示", "**提示**")
         categoryName = ""
         for category in topicTags:
             if categoryName == "":
@@ -132,14 +134,13 @@ class downloader(object):
             else:
                 if category['translatedName'] is not None:
                     categoryName += ", `" + category['translatedName'] + "`"
-        text = text + "## 题解\n**分类标签：**" + categoryName + "\n"
-        text = text + "### 题解一：\n"
-        ## 分类下载
+        text = text + "**题解**\n**分类标签：**" + categoryName + "\n"
+        text = text + "**题解一**：\n"
+        ##分类下载
         for category in topicTags:
-            if category['translatedName'] is not None:
+            if category['translatedName'] is not None and text is not None:
                 dl.writer(title, category['translatedName'] + "/" + title + '.md', text, category['translatedName'])
         return text
-
 
     """
     函数说明:将爬取的文章内容写入文件
@@ -163,10 +164,11 @@ class downloader(object):
                 print("目录存在哦")
             else:
                 os.mkdir(dir)
-        with open(path, 'a', encoding='utf-8') as f:
-            f.write("## " + name + '\n')
-            f.writelines(text)
-            f.write('\n\n')
+        if text is not None:
+            with open(path, 'a', encoding='utf-8') as f:
+                f.write("## " + name + '\n')
+                f.writelines(text)
+                f.write('\n\n')
 
 
 if __name__ == "__main__":
